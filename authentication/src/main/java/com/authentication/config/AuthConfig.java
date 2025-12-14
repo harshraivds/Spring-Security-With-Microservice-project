@@ -49,7 +49,7 @@ public class AuthConfig {
         http
                 .csrf(csrf -> csrf.disable())  // disable csrf for Postman testing
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login","/api/v1/auth/update-password").permitAll()
                         .requestMatchers("/api/v1/welcome").hasRole("ADMIN")// allow public apis
                         .anyRequest().authenticated()
                 ).authenticationProvider(authProvider())

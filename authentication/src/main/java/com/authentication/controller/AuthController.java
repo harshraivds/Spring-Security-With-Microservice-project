@@ -2,6 +2,7 @@ package com.authentication.controller;
 
 import com.authentication.dto.APIResponse;
 import com.authentication.dto.LoginDto;
+import com.authentication.dto.UpdatePasswordDto;
 import com.authentication.dto.UserDto;
 import com.authentication.entity.User;
 import com.authentication.repository.UserRepository;
@@ -39,6 +40,15 @@ public class AuthController {
             @RequestBody UserDto userDto
             ){
         APIResponse<?> response = authService.register(userDto);
+
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
+    }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<APIResponse> updatePassword(
+            @RequestBody UpdatePasswordDto updatePasswordDto
+    ){
+        APIResponse<?> response = authService.changePassword(updatePasswordDto);
 
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }

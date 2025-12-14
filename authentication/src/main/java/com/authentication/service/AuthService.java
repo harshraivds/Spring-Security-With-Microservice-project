@@ -1,11 +1,13 @@
 package com.authentication.service;
 
 import com.authentication.dto.APIResponse;
+import com.authentication.dto.UpdatePasswordDto;
 import com.authentication.dto.UserDto;
 import com.authentication.entity.User;
 import com.authentication.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +53,46 @@ public class AuthService {
         response.setData(user);
         return response;
     }
+    public APIResponse<?> changePassword(UpdatePasswordDto updatePasswordDto) {
 
+        APIResponse<Object> response = new APIResponse<>();
+
+        // Check if username exists
+        if (!userRepository.existsByUsername(updatePasswordDto.getUsername())) {
+            response.setMessage("fail");
+            response.setStatus(500);
+            response.setData("Username already exists");
+            return response;
+        }
+
+        // Check if email exists
+        User user = userRepository.findByEmail(updatePasswordDto.getEmail());
+        if (user == null) {
+            response.setMessage("fail");
+            response.setStatus(500);
+            response.setData("Email already exists");
+            return response;
+        }
+
+        // Check old password
+        if (!passwordEncoder.matches(updatePasswordDto.getOldPassword(), user.getPassword())) {
+            response.setMessage("fail");
+            response.setStatus(400);
+            response.setData("Old password is incorrect");
+            return response;
+        }
+
+        // Encrypt new password correctly
+        String encodedNewPassword = passwordEncoder.encode(updatePasswordDto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        userRepository.save(user);
+
+        response.setMessage("success");
+        response.setStatus(200);
+        response.setData("Password updated successfully");
+
+        return response;
+    }
 
 }
 
